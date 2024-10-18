@@ -51,15 +51,4 @@ function update_balance($user_id, $amount) {
     $stmt = $pdo->prepare("UPDATE sessions SET balance = balance + :amount WHERE user_id = :user_id");
     $stmt->execute(['amount' => $amount, 'user_id' => $user_id]);
 }
-
-function handle_refill_callback($chat_id, $callback_data) {
-    // Extract the amount from the callback data
-    $amount = (int) str_replace('refill_', '', $callback_data);
-
-    // Prepare a description for the invoice
-    $description = "Вы запросили пополнение баланса на $amount рублей.";
-
-    // Call the send_invoice function
-    send_invoice($chat_id, $amount, $description);
-}
 ?>
