@@ -58,7 +58,7 @@ function call_chatgpt_api($prompt) {
             ['role' => 'system', 'content' => 'Ты православный священник. Не скупись на слова. Сделай длинную и красивую молитву. Но длиной не больше 400 токенов.  Напиши молитву по следующей теме:'],
             ['role' => 'user', 'content' => $prompt]
         ],
-        'max_tokens' => 400
+        'max_tokens' => 500
     ];
 
     $options = [
