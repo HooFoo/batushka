@@ -49,4 +49,11 @@ function answer_callback_query($callback_query_id, $text) {
     file_get_contents($url . '?' . http_build_query($data));
 }
 
+// Get current session state
+function get_user_session($chat_id) {
+    global $db;
+    $stmt = $db->prepare("SELECT state FROM sessions WHERE user_id = ?");
+    $stmt->execute([$chat_id]);
+    return $stmt->fetchColumn();
+}
 ?>
