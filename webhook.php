@@ -9,6 +9,14 @@ require_once('modules/show_balance.php');          // Handle balance check
 require_once('modules/refill_balance.php');   // Handle balance refill
 require_once('modules/start_session.php');    // Handle starting session
 
+// Ensure $db is properly initialized
+if ($db) {
+    $stmt = $db->prepare("YOUR QUERY");
+    // Rest of your code
+} else {
+    error_log("Database connection is not set.");
+}
+
 // Get webhook data
 $input = file_get_contents('php://input');
 $update = json_decode($input, true);
