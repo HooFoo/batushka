@@ -33,41 +33,6 @@ function handle_refill_callback($chat_id, $callback_data) {
     send_invoice($chat_id, $amount, $description);
 }
 
-function send_invoice($chat_id, $amount, $description) {
-    global $telegram_token;
-
-    $url = "https://api.telegram.org/bot$telegram_token/sendInvoice";
-    $data = [
-        'chat_id' => $chat_id,
-        'title' => 'Пополнение баланса',
-        'description' => $description,
-        'payload' => uniqid(), // Unique identifier for your invoice
-        'provider_token' => 'YOUR_PROVIDER_TOKEN', // Replace with your actual payment provider token
-        'start_parameter' => 'refill_balance', // Start parameter for the invoice
-        'currency' => 'RUB', // Ensure this is the correct currency code
-        'amount' => $amount * 100, // Amount in kopecks (RUB), multiply by 100
-        'reply_markup' => json_encode([
-            'inline_keyboard' => [[
-                ['text' => 'Оплатить', 'pay' => true]
-            ]]
-        ])
-    ];
-
-    $options = [
-        'http' => [
-            'header' => "Content-Type: application/json\r\n",
-            'method' => 'POST',
-            'content' => json_encode($data)
-        ]
-    ];
-
-    // Send the request
-    $response = file_get_contents($url, false, stream_context_create($options));
-    if ($response === false) {
-        error_log("Failed to send invoice: $http_response_header", 3, $log_file);
-    }
-}
-
 function handle_successful_payment($chat_id, $payment_info) {
     $amount_paid = $payment_info['total_amount'] / 100; // Convert from kopecks to ₽
 
