@@ -9,7 +9,11 @@ require_once('modules/show_balance.php');          // Handle balance check
 require_once('modules/refill_balance.php');   // Handle balance refill
 require_once('modules/start_session.php');    // Handle starting session
 
-// Ensure DB connection is globally available
+// Assign $pdo to $db to maintain compatibility with modules using $db
+global $pdo;
+$db = $pdo;
+
+// Now $db can be used in all modules as a global variable
 global $db;
 
 if (!$db) {
