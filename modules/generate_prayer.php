@@ -20,7 +20,7 @@ function generate_prayer($chat_id, $user_prayer_request) {
 
     } else {
         // If there was a problem, inform the user and return the balance
-        send_message($chat_id, "К сожалению, не удалось сгенерировать молитву. Пожалуйста, попробуйте снова.");
+        send_message($chat_id, "К сожалению, не удалось получить молитву. Пожалуйста, попробуйте снова.");
         
         // Refund the user
         refund_balance($chat_id, $price); // Assuming the cost was 100 rubles
@@ -33,11 +33,14 @@ function generate_prayer($chat_id, $user_prayer_request) {
 // Function to call the ChatGPT API for generating a prayer
 function call_chatgpt_api($prompt) {
     global $api_key;  // API key is now in the config.php file
-    $url = 'https://api.openai.com/v1/completions';
+    $url = 'https://api.openai.com/v1/chat/completions';
 
     $data = [
-        'model' => 'text-davinci-003',  // Or another suitable model
-        'prompt' => $prompt,
+        'model' => 'gpt-4o',  // Or another suitable model
+        'messages' => [
+            ['role' => 'system', 'content' => 'Ты православный священник. Напиши молитву по следующей теме:'],
+            ['role' => 'user', 'content' => $prompt]
+        ],
         'max_tokens' => 150
     ];
 
