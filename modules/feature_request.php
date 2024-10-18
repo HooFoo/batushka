@@ -26,7 +26,7 @@ function handle_prayer_request($chat_id, $text, $callback_data, $callback_query_
         $stmt->execute([$chat_id, $text]);
         
         // Prepare confirmation message
-        $confirmation_text = "Вы хотите заказать молитву: \"$text\"? Это стоит 100 рублей. Подтверждаете?";
+        $confirmation_text = "Вы хотите заказать молитву: \"$text\"? Это стоит $price  рублей. Подтверждаете?";
         send_message($chat_id, $confirmation_text, json_encode([
             'inline_keyboard' => [
                 [
@@ -43,11 +43,17 @@ function handle_prayer_request($chat_id, $text, $callback_data, $callback_query_
     // Step 3: Handle confirmation or rejection
     elseif ($callback_data === "confirm_prayer") {
         // Deduct the balance (assume 100 rubles)
-        if (deduct_balance($chat_id, 100)) {
-            send_message($chat_id, "Молитва принята в обработку. Ваш баланс был уменьшен на 100 рублей.");
+        if (deduct_balance($chat_id, $price)) {
+            // Generate prayer after balance deduction
+            $stmt = $db->prepare("SELECT prayer_text FROM prayer_requests WHERE user_id = ? ORDER BY id DESC LIMIT 1");
+            $stmt->execute([$chat_id]);
+            $prayer_request = $stmt->fetchColumn();
+
+            // Call function to generate the prayer
+            generate_prayer($chat_id, $prayer_request);
+            
+            // Update session state to none
             update_user_session($chat_id, 'none');
-            update_prayer_status($chat_id, 'confirmed');
-            // Here you can call a function to start prayer generation flow
         } else {
             send_message($chat_id, "Недостаточно средств на балансе.");
         }
@@ -56,44 +62,6 @@ function handle_prayer_request($chat_id, $text, $callback_data, $callback_query_
         send_message($chat_id, "Вы отменили запрос. Пожалуйста, укажите новую молитву.");
         update_user_session($chat_id, 'waiting_for_prayer');
     }
-}
-
-// Update user session state in DB
-function update_user_session($chat_id, $state) {
-    global $db;
-    $stmt = $db->prepare("UPDATE sessions SET state = ? WHERE user_id = ?");
-    $stmt->execute([$state, $chat_id]);
-}
-
-// Get current session state
-function get_user_session($chat_id) {
-    global $db;
-    $stmt = $db->prepare("SELECT state FROM sessions WHERE user_id = ?");
-    $stmt->execute([$chat_id]);
-    return $stmt->fetchColumn();
-}
-
-// Deduct balance function
-function deduct_balance($chat_id, $amount) {
-    global $db;
-    $stmt = $db->prepare("SELECT balance FROM sessions WHERE user_id = ?");
-    $stmt->execute([$chat_id]);
-    $balance = $stmt->fetchColumn();
-    
-    if ($balance >= $amount) {
-        $stmt = $db->prepare("UPDATE sessions SET balance = balance - ? WHERE user_id = ?");
-        $stmt->execute([$amount, $chat_id]);
-        return true;
-    }
-    
-    return false;
-}
-
-// Update prayer request status
-function update_prayer_status($chat_id, $status) {
-    global $db;
-    $stmt = $db->prepare("UPDATE prayer_requests SET status = ? WHERE user_id = ? AND status = 'pending'");
-    $stmt->execute([$status, $chat_id]);
 }
 
 ?>
