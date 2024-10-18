@@ -63,4 +63,27 @@ function update_user_session($chat_id, $state) {
     $stmt = $db->prepare("UPDATE sessions SET state = ? WHERE user_id = ?");
     $stmt->execute([$state, $chat_id]);
 }
+
+// Deduct balance function
+function deduct_balance($chat_id, $amount) {
+    global $db;
+    $stmt = $db->prepare("SELECT balance FROM sessions WHERE user_id = ?");
+    $stmt->execute([$chat_id]);
+    $balance = $stmt->fetchColumn();
+    
+    if ($balance >= $amount) {
+        $stmt = $db->prepare("UPDATE sessions SET balance = balance - ? WHERE user_id = ?");
+        $stmt->execute([$amount, $chat_id]);
+        return true;
+    }
+    
+    return false;
+}
+
+// Update prayer request status
+function update_prayer_status($chat_id, $status) {
+    global $db;
+    $stmt = $db->prepare("UPDATE prayer_requests SET status = ? WHERE user_id = ? AND status = 'pending'");
+    $stmt->execute([$status, $chat_id]);
+}
 ?>
