@@ -37,7 +37,7 @@ if (isset($update['callback_query'])) {
         handle_check_balance($chat_id, $callback_query_id);
     } elseif ($callback_data === "refill_balance") {
         // Show balance refill options
-        handle_refill_balance_options($chat_id, $callback_query_id); {
+        handle_refill_balance_options($chat_id, $callback_query_id);
     } elseif (strpos($callback_data, "refill_balance_") === 0) {
         // Handle balance refill based on button
         handle_refill_balance($chat_id, $callback_data, $callback_query_id);
