@@ -33,6 +33,11 @@ function handle_refill_callback($chat_id, $callback_data) {
     send_invoice($chat_id, $amount, $description);
 }
 
+function handle_refill_balance_options($chat_id, $callback_query_id) {
+    send_refill_options($chat_id);
+    answer_callback_query($callback_query_id, "Выберите сумму пополнения.");
+}
+
 function handle_successful_payment($chat_id, $payment_info) {
     $amount_paid = $payment_info['total_amount'] / 100; // Convert from kopecks to ₽
 
