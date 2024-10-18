@@ -7,7 +7,9 @@ function generate_prayer($chat_id, $user_prayer_request) {
 
     // Prepare the prompt for ChatGPT
     $prompt = $user_prayer_request;
-
+    // Call ChatGPT API
+    $response = call_chatgpt_api($prompt);
+    
     // Call ChatGPT API
     if ($response && isset($response['choices'][0]['message']['content'])) {
         // Successfully generated prayer
