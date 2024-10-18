@@ -19,6 +19,7 @@ function send_refill_options($chat_id) {
 function handle_refill_callback($chat_id, $callback_data) {
     // Extract the amount from the callback data
     $amount = (int) str_replace('refill_', '', $callback_data);
+    error_log("Refill amount: " . $amount);
 
     // Prepare a description for the invoice
     $description = "Вы запросили пополнение баланса на $amount рублей.";
