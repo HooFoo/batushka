@@ -13,13 +13,7 @@ function send_refill_options($chat_id) {
         ]
     ];
 
-    $data = [
-        'chat_id' => $chat_id,
-        'text' => "Выберите сумму пополнения:",
-        'reply_markup' => json_encode($keyboard)
-    ];
-
-    send_message($chat_id, $data['text']);
+    send_message($chat_id, "Выберите сумму пополнения: ", $keyboard);
 }
 
 function handle_refill_callback($chat_id, $callback_data) {
