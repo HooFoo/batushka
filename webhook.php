@@ -4,7 +4,7 @@
 require_once('config.php');
 require_once('common.php');
 require_once('modules/feature_request.php');  // Handle prayer request
-require_once('modules/balance.php');          // Handle balance check
+require_once('modules/show_balance.php');          // Handle balance check
 require_once('modules/refill_balance.php');   // Handle balance refill
 require_once('modules/start_session.php');    // Handle starting session
 
