@@ -26,19 +26,25 @@ $callback_data = $update['callback_query']['data'] ?? null;
 // Log the incoming update
 error_log("Incoming update: " . print_r($update, true), 3, $log_file);
 
-// Handle different commands and callbacks
-if ($text === "/start") {
+// Check if the update is a callback query
+if (isset($update['callback_query'])) {
+    $callback_data = $update['callback_query']['data'];
+    $chat_id = $update['callback_query']['message']['chat']['id'];
+
+    // Handle different callback data
+    if ($callback_data === "check_balance") {
+        include 'modules/show_balance.php';
+        show_balance($chat_id);
+    } elseif (strpos($callback_data, 'refill_') !== false) {
+        include 'modules/refill_balance.php';
+        handle_refill_callback($chat_id, $callback_data);
+    } elseif ($callback_data === "request_feature") {
+        include 'modules/feature_request.php';
+        handle_feature_request($chat_id);
+    }
+} elseif ($text === "/start") {
     include 'modules/start_session.php';
     start_session($chat_id);
-} elseif ($callback_data === "check_balance") {
-    include 'modules/show_balance.php';
-    show_balance($chat_id);
-} elseif (strpos($callback_data, 'refill_') !== false) {
-    include 'modules/refill_balance.php';
-    handle_refill_callback($chat_id, $callback_data);
-} elseif ($callback_data === "request_feature") {
-    include 'modules/feature_request.php';
-    handle_feature_request($chat_id);
 } elseif (isset($update['message']['successful_payment'])) {
     include 'modules/refill_balance.php';
     handle_successful_payment($chat_id, $update['message']['successful_payment']);
@@ -46,14 +52,17 @@ if ($text === "/start") {
     send_message($chat_id, "Пожалуйста, используйте одну из доступных опций.");
 }
 
-// Updated send_message function to include reply_markup
+// Function to send messages to Telegram
 function send_message($chat_id, $text, $reply_markup = null) {
     global $telegram_token, $log_file;
     $url = "https://api.telegram.org/bot$telegram_token/sendMessage";
-    $data = ['chat_id' => $chat_id, 'text' => $text];
+    $data = [
+        'chat_id' => $chat_id,
+        'text' => $text
+    ];
 
     if ($reply_markup) {
-        $data['reply_markup'] = $reply_markup; // Add inline keyboard if provided
+        $data['reply_markup'] = json_decode($reply_markup); // Add inline keyboard if provided
     }
 
     // Log the message being sent
