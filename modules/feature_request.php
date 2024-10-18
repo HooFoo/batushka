@@ -1,5 +1,5 @@
 <?php
-require_once('modules/feature_request.php');
+require_once('modules/generate_prayer.php');
 
 // Function to handle the prayer request feature
 function handle_prayer_request($chat_id, $text, $callback_data, $callback_query_id) {
