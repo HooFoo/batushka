@@ -2,6 +2,7 @@
 
 // Include configuration, common functions, and feature modules
 require_once('config.php');
+require_once('db_connection.php');K
 require_once('common.php');
 require_once('modules/feature_request.php');  // Handle prayer request
 require_once('modules/show_balance.php');          // Handle balance check
