@@ -86,7 +86,7 @@ function call_audio_api($text) {
     $url = 'https://api.openai.com/v1/audio/speech';
 
     $data = [
-        'text' => $text,
+        'input' => $text,
         'voice' => 'onyx',  // Replace with the desired voice
         'model' => 'tts-1',  // Replace with desired model
         'response_format' => 'opus'
