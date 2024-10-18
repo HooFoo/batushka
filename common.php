@@ -94,7 +94,7 @@ function send_audio($chat_id, $audio_file) {
     $url = "https://api.telegram.org/bot$telegram_token/sendVoice";
     $post_fields = [
         'chat_id'   => $chat_id,
-        'audio'     => new CURLFile(realpath($audio_file))
+        'voice'     => new CURLFile(realpath($audio_file))
     ];
 
     $ch = curl_init();

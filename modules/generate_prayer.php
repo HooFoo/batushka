@@ -5,7 +5,7 @@ function generate_prayer($chat_id, $user_prayer_request) {
     global $db;
     global $price;
     // Notify user about generation
-    send_message($chat_id, "Создание молитвы...");
+    send_message($chat_id, "Пишем вашу молитву ...");
     // Prepare the prompt for ChatGPT
     $prompt = $user_prayer_request;
     // Call ChatGPT API
