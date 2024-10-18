@@ -56,4 +56,11 @@ function get_user_session($chat_id) {
     $stmt->execute([$chat_id]);
     return $stmt->fetchColumn();
 }
+
+// Update user session state in DB
+function update_user_session($chat_id, $state) {
+    global $db;
+    $stmt = $db->prepare("UPDATE sessions SET state = ? WHERE user_id = ?");
+    $stmt->execute([$state, $chat_id]);
+}
 ?>
