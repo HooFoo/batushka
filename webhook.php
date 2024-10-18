@@ -2,14 +2,29 @@
 include 'config.php';         // Include configuration variables
 include 'db_connection.php';  // Include database connection
 
+// Set the log file path
+$log_file = '/var/log/telegram_bot.log'; // Change this to your desired log file path
+
 // Read the update from Telegram
 $content = file_get_contents("php://input");
+if ($content === false) {
+    error_log("Failed to get content from input stream", 3, $log_file);
+    exit;
+}
+
 $update = json_decode($content, true);
+if ($update === null) {
+    error_log("Failed to decode JSON: " . json_last_error_msg(), 3, $log_file);
+    exit;
+}
 
 // Extract basic data
 $chat_id = $update['message']['chat']['id'] ?? null;
 $text = $update['message']['text'] ?? null;
 $callback_data = $update['callback_query']['data'] ?? null;
+
+// Log the incoming update
+error_log("Incoming update: " . print_r($update, true), 3, $log_file);
 
 // Handle different commands and callbacks
 if ($text === "/start") {
@@ -33,9 +48,13 @@ if ($text === "/start") {
 
 // Function to send messages to Telegram
 function send_message($chat_id, $text) {
-    global $telegram_token;
+    global $telegram_token, $log_file;
     $url = "https://api.telegram.org/bot$telegram_token/sendMessage";
     $data = ['chat_id' => $chat_id, 'text' => $text];
+    
+    // Log the message being sent
+    error_log("Sending message to $chat_id: $text", 3, $log_file);
+
     $options = [
         'http' => [
             'header'  => "Content-Type: application/json\r\n",
@@ -43,6 +62,11 @@ function send_message($chat_id, $text) {
             'content' => json_encode($data)
         ]
     ];
-    file_get_contents($url, false, $context);
+
+    // Send the request and log the response
+    $response = file_get_contents($url, false, stream_context_create($options));
+    if ($response === false) {
+        error_log("Failed to send message: $http_response_header", 3, $log_file);
+    }
 }
 ?>
