@@ -84,7 +84,6 @@ function call_chatgpt_api($prompt) {
 function call_audio_api($text) {
     global $api_key;  // API key is now in the config.php file
     $url = 'https://api.openai.com/v1/audio/speech';
-    error_log("Started voice generation for: $text");
     $data = [
         'input' => $text,
         'voice' => 'onyx',  // Replace with the desired voice
@@ -102,7 +101,6 @@ function call_audio_api($text) {
 
     $context  = stream_context_create($options);
     $result = file_get_contents($url, false, $context);
-    error_log("Got response from OpenAI Audio API");
 
     if ($result === false) {
         error_log("Error connecting to OpenAI Audio API: \n\n" . print_r(error_get_last(), true));
@@ -112,7 +110,7 @@ function call_audio_api($text) {
     // Save OGG file (binary data)
     $audio_file = '/tmp/prayer_' . uniqid() . '.ogg';
     file_put_contents($audio_file, $result); // Save raw binary data
-    error_log("File saved: $audio_file");
+
     return $audio_file;
 }
 
