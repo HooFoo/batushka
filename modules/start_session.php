@@ -49,32 +49,4 @@ function send_message_with_buttons($chat_id, $text) {
     // Send the message
     send_message($chat_id, $data['text'], $data['reply_markup']);
 }
-
-// Updated send_message function to include reply_markup
-function send_message($chat_id, $text, $reply_markup = null) {
-    global $telegram_token, $log_file;
-    $url = "https://api.telegram.org/bot$telegram_token/sendMessage";
-    $data = ['chat_id' => $chat_id, 'text' => $text];
-
-    if ($reply_markup) {
-        $data['reply_markup'] = $reply_markup; // Add inline keyboard if provided
-    }
-
-    // Log the message being sent
-    error_log("Sending message to $chat_id: $text", 3, $log_file);
-
-    $options = [
-        'http' => [
-            'header'  => "Content-Type: application/json\r\n",
-            'method'  => 'POST',
-            'content' => json_encode($data)
-        ]
-    ];
-
-    // Send the request and log the response
-    $response = file_get_contents($url, false, stream_context_create($options));
-    if ($response === false) {
-        error_log("Failed to send message: $http_response_header", 3, $log_file);
-    }
-}
 ?>

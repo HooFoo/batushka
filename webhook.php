@@ -46,12 +46,16 @@ if ($text === "/start") {
     send_message($chat_id, "Пожалуйста, используйте одну из доступных опций.");
 }
 
-// Function to send messages to Telegram
-function send_message($chat_id, $text) {
+// Updated send_message function to include reply_markup
+function send_message($chat_id, $text, $reply_markup = null) {
     global $telegram_token, $log_file;
     $url = "https://api.telegram.org/bot$telegram_token/sendMessage";
     $data = ['chat_id' => $chat_id, 'text' => $text];
-    
+
+    if ($reply_markup) {
+        $data['reply_markup'] = $reply_markup; // Add inline keyboard if provided
+    }
+
     // Log the message being sent
     error_log("Sending message to $chat_id: $text", 3, $log_file);
 
