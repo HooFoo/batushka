@@ -6,7 +6,7 @@ function start_session($chat_id) {
     global $db;
 
     // Create or reset session in the database
-    $stmt = $db->prepare("INSERT INTO users (user_id, session_state) VALUES (?, 'none') ON DUPLICATE KEY UPDATE session_state='none'");
+    $stmt = $db->prepare("INSERT INTO sessions (user_id, state) VALUES (?, 'none') ON DUPLICATE KEY UPDATE state='none'");
     $stmt->execute([$chat_id]);
 
     // Send welcome message with action options
@@ -22,3 +22,5 @@ function start_session($chat_id) {
         ]
     ]));
 }
+
+?>
