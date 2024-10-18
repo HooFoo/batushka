@@ -90,8 +90,8 @@ function update_prayer_status($chat_id, $status) {
 // Function to send audio to the user
 function send_audio($chat_id, $audio_file) {
     global $telegram_token;
-
-    $url = "https://api.telegram.org/bot$telegram_token/sendAudio";
+    error_log("Sending file: $audio_file");
+    $url = "https://api.telegram.org/bot$telegram_token/sendVoice";
     $post_fields = [
         'chat_id'   => $chat_id,
         'audio'     => new CURLFile(realpath($audio_file))
@@ -104,7 +104,7 @@ function send_audio($chat_id, $audio_file) {
     curl_setopt($ch, CURLOPT_POSTFIELDS, $post_fields);
     $result = curl_exec($ch);
     curl_close($ch);
-
+    error_log("Sending voice done: $result");
     if ($result === false) {
         error_log("Error sending audio file to Telegram.");
     }
