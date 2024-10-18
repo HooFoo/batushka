@@ -61,14 +61,14 @@ function handle_prayer_request($chat_id, $text, $callback_data, $callback_query_
 // Update user session state in DB
 function update_user_session($chat_id, $state) {
     global $db;
-    $stmt = $db->prepare("UPDATE users SET session_state = ? WHERE user_id = ?");
+    $stmt = $db->prepare("UPDATE sessions SET state = ? WHERE user_id = ?");
     $stmt->execute([$state, $chat_id]);
 }
 
 // Get current session state
 function get_user_session($chat_id) {
     global $db;
-    $stmt = $db->prepare("SELECT session_state FROM users WHERE user_id = ?");
+    $stmt = $db->prepare("SELECT state FROM sessions WHERE user_id = ?");
     $stmt->execute([$chat_id]);
     return $stmt->fetchColumn();
 }
@@ -76,12 +76,12 @@ function get_user_session($chat_id) {
 // Deduct balance function
 function deduct_balance($chat_id, $amount) {
     global $db;
-    $stmt = $db->prepare("SELECT balance FROM users WHERE user_id = ?");
+    $stmt = $db->prepare("SELECT balance FROM sessions WHERE user_id = ?");
     $stmt->execute([$chat_id]);
     $balance = $stmt->fetchColumn();
     
     if ($balance >= $amount) {
-        $stmt = $db->prepare("UPDATE users SET balance = balance - ? WHERE user_id = ?");
+        $stmt = $db->prepare("UPDATE sessions SET balance = balance - ? WHERE user_id = ?");
         $stmt->execute([$amount, $chat_id]);
         return true;
     }
