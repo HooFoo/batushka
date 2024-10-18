@@ -3,6 +3,7 @@
 // Function to handle the prayer request feature
 function handle_prayer_request($chat_id, $text, $callback_data, $callback_query_id) {
     global $db;
+    global $price;
 
     // Check if user is waiting for prayer text
     $session_state = get_user_session($chat_id);

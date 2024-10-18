@@ -3,6 +3,7 @@
 // Function to generate a prayer based on user input
 function generate_prayer($chat_id, $user_prayer_request) {
     global $db;
+    global $price;
 
     // Prepare the prompt for ChatGPT
     $prompt = "Сгенерируй православную молитву про: " . $user_prayer_request;
