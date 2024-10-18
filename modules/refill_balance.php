@@ -23,49 +23,49 @@ function send_refill_options($chat_id) {
 }
 
 function handle_refill_callback($chat_id, $callback_data) {
-    $amount = 0;
+    // Extract the amount from the callback data
+    $amount = (int) str_replace('refill_', '', $callback_data);
 
-    switch ($callback_data) {
-        case 'refill_100':
-            $amount = 10000; // 100 ₽ in kopecks
-            break;
-        case 'refill_200':
-            $amount = 20000;
-            break;
-        case 'refill_400':
-            $amount = 40000;
-            break;
-        case 'refill_1000':
-            $amount = 100000;
-            break;
-    }
+    // Prepare a description for the invoice
+    $description = "Вы запросили пополнение баланса на $amount рублей.";
 
-    send_invoice($chat_id, $amount);
+    // Call the send_invoice function
+    send_invoice($chat_id, $amount, $description);
 }
 
-function send_invoice($chat_id, $amount) {
+function send_invoice($chat_id, $amount, $description) {
     global $telegram_token;
 
+    $url = "https://api.telegram.org/bot$telegram_token/sendInvoice";
     $data = [
         'chat_id' => $chat_id,
         'title' => 'Пополнение баланса',
-        'description' => 'Пополнение баланса на указанную сумму.',
-        'payload' => 'balance_refill_' . $amount, // Unique payload
-        'provider_token' => 'YOUR_PROVIDER_TOKEN', // Your payment provider token
-        'currency' => 'RUB', // Currency
-        'prices' => json_encode([['label' => 'Пополнение', 'amount' => $amount]]), // Amount in kopecks
-        'start_parameter' => 'balance-refill'
+        'description' => $description,
+        'payload' => uniqid(), // Unique identifier for your invoice
+        'provider_token' => 'YOUR_PROVIDER_TOKEN', // Replace with your actual payment provider token
+        'start_parameter' => 'refill_balance', // Start parameter for the invoice
+        'currency' => 'RUB', // Ensure this is the correct currency code
+        'amount' => $amount * 100, // Amount in kopecks (RUB), multiply by 100
+        'reply_markup' => json_encode([
+            'inline_keyboard' => [[
+                ['text' => 'Оплатить', 'pay' => true]
+            ]]
+        ])
     ];
 
-    $url = "https://api.telegram.org/bot$telegram_token/sendInvoice";
     $options = [
         'http' => [
-            'header'  => "Content-Type: application/json\r\n",
-            'method'  => 'POST',
+            'header' => "Content-Type: application/json\r\n",
+            'method' => 'POST',
             'content' => json_encode($data)
         ]
     ];
-    file_get_contents($url, false, $context);
+
+    // Send the request
+    $response = file_get_contents($url, false, stream_context_create($options));
+    if ($response === false) {
+        error_log("Failed to send invoice: $http_response_header", 3, $log_file);
+    }
 }
 
 function handle_successful_payment($chat_id, $payment_info) {
@@ -85,5 +85,16 @@ function update_balance($user_id, $amount) {
     global $pdo;
     $stmt = $pdo->prepare("UPDATE sessions SET balance = balance + :amount WHERE user_id = :user_id");
     $stmt->execute(['amount' => $amount, 'user_id' => $user_id]);
+}
+
+function handle_refill_callback($chat_id, $callback_data) {
+    // Extract the amount from the callback data
+    $amount = (int) str_replace('refill_', '', $callback_data);
+
+    // Prepare a description for the invoice
+    $description = "Вы запросили пополнение баланса на $amount рублей.";
+
+    // Call the send_invoice function
+    send_invoice($chat_id, $amount, $description);
 }
 ?>
