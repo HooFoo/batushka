@@ -104,7 +104,7 @@ function call_audio_api($text) {
     $result = file_get_contents($url, false, $context);
 
     if ($result === false) {
-        error_log("Error connecting to OpenAI Audio API");
+        error_log("Error connecting to OpenAI Audio API: \n\n" . print_r(error_get_last(), true));
         return null;
     }
 
