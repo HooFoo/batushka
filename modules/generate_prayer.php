@@ -14,6 +14,8 @@ function generate_prayer($chat_id, $user_prayer_request) {
     // Call ChatGPT API
     $response = call_chatgpt_api($prompt);
 
+    error_log("Response from ChatGPT API: " . json_encode($response));
+
     if ($response && isset($response['choices'][0]['text'])) {
         // Successfully generated prayer
         $generated_prayer = trim($response['choices'][0]['text']);
