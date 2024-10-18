@@ -88,7 +88,7 @@ function call_audio_api($text) {
     $data = [
         'text' => $text,
         'voice' => 'onyx',  // Replace with the desired voice
-        'model' => 'tts1',  // Replace with desired model
+        'model' => 'tts-1',  // Replace with desired model
         'response_format' => 'opus'
     ];
 
