@@ -19,7 +19,7 @@ function generate_prayer($chat_id, $user_prayer_request) {
         send_message($chat_id, $strings->get('generated_prayer') . "\n\n" . $generated_prayer);
 
         // Get a list of saints based on the prayer text
-        $response_saints = call_chatgpt_api($strings->get('prompt_saints'), $user_prayer_request, 200);
+        $response_saints = call_chatgpt_api($strings->get('prompt_saints'), $user_prayer_request, 300);
         if ($response_saints && isset($response_saints['choices'][0]['message']['content'])) {
             $saints_list = trim($response_saints['choices'][0]['message']['content']);
             send_message($chat_id, $strings->get('saints_recommendation') . "\n\n" . $saints_list);
