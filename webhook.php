@@ -17,6 +17,8 @@ $db = $pdo;
 // Now $db can be used in all modules as a global variable
 global $db;
 
+// localization
+$strings = new Strings();
 global $strings;
 
 if (!$db) {
