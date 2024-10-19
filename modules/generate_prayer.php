@@ -53,7 +53,7 @@ function generate_prayer($chat_id, $user_prayer_request) {
 }
 
 // Function to call the ChatGPT API for generating a prayer
-function call_chatgpt_api($system_prompt, $user_request, $max_tokens = 500) {
+function call_chatgpt_api($system_prompt, $user_request, $max_tokens = 700) {
     global $api_key;
     $url = 'https://api.openai.com/v1/chat/completions';
 
