@@ -17,6 +17,8 @@ $db = $pdo;
 // Now $db can be used in all modules as a global variable
 global $db;
 
+global $strings;
+
 if (!$db) {
     error_log("Database connection failed");
     exit;
