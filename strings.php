@@ -10,42 +10,42 @@ class Strings {
     private function loadStrings() {
         // Example strings for the bot
         $this->strings = [
-            'bot_description' => 'Добро пожаловать! Я ваш молитвенный помощник. Здесь вы можете заказать молитву за себя или своих близких. \n\n **Для корректной работы, пожалуйста, разрешите боту отправлять вам аудиосообщения в настройках.**',
-            'choose_action' => 'Что бы вы хотели сделать?',
-            'refill_balance' => 'Пополнить счёт',
-            'check_balance' => 'Проверить счёт',
-            'request_prayer' => 'Заказать молитву',
-            'current_balance' => 'Ваш текущий баланс составляет: ',
-            'balance_not_found' => 'К сожалению, ваш баланс не найден. Пожалуйста, начните новую сессию.',
-            'balance_checked' => 'Ваш баланс проверен.',
-            'choose_refill_amount' => 'Выберите сумму для пополнения:',
-            'refill_description' => 'Вы выбрали пополнение на сумму {amount} рублей. Подтвердите оплату для продолжения.',
-            'payment_success' => 'Ваш платёж на сумму {amount} ₽ был успешно проведён! Благодарим за ваше пожертвование.',
-            'refill_100' => 'Пожертвовать 100 ₽',
-            'refill_200' => 'Пожертвовать 200 ₽',
-            'refill_400' => 'Пожертвовать 400 ₽',
-            'refill_1000' => 'Пожертвовать 1000 ₽',
-            'request_prayer_text' => 'Какую молитву вы хотите заказать? Укажите ваши намерения.',
-            'request_received' => 'Запрос получен. Мы готовы приступить к молитве.',
-            'confirm_prayer' => 'Вы заказали молитву: "{text}". Это стоит {price} рублей. Подтверждаете?',
-            'confirm_button' => 'Подтвердить',
-            'cancel_button' => 'Отменить',
-            'insufficient_balance' => 'К сожалению, на вашем счёте недостаточно средств.',
-            'prayer_cancelled' => 'Ваш запрос был отменён. Пожалуйста, отправьте новый текст молитвы.',
-            'prayer_generating' => 'Мы составляем вашу молитву...',
-            'generated_prayer' => 'Вот ваша молитва:',
-            'audio_generation_failed' => 'К сожалению, не удалось создать аудиозапись молитвы. Попробуйте снова.',
-            'prayer_generation_failed' => 'Не удалось получить текст молитвы. Пожалуйста, попробуйте снова.',
-            'audio_send_error' => 'Произошла ошибка при отправке аудиосообщения. Проверьте настройки приватности.',
-            'prompt_pray' => 'Ты православный священник. Не скупись на слова. Сделай длинную и красивую молитву. Но длиной не больше 1024 символов. Напиши молитву по следующей теме:',
-            'prompt_saints' => 'Ты православный священник. Каким святым стоит молиться по следующему поводу? Каким иконам стоит поставить свечу? Будь краток и обязательно упомяни свечи когда будешь отвечать',
-            'saints_recommendation' => 'Как лучше молиться: ',
-        ];           
+            'bot_description' => 'Welcome! I am your prayer companion, here to help you request prayers for yourself or your loved ones. \n\n **Please allow the bot to send audio messages in your privacy settings for full functionality.**',
+            'choose_action' => 'How can I assist you today?',
+            'refill_balance' => 'Make an Offering',
+            'check_balance' => 'Check Your Offerings',
+            'request_prayer' => 'Request a Prayer',
+            'current_balance' => 'Your current offering balance is: ',
+            'balance_not_found' => 'We couldn’t locate your balance. Please start a new session.',
+            'balance_checked' => 'Your offering balance has been checked.',
+            'choose_refill_amount' => 'Choose your offering amount:',
+            'refill_description' => 'You’ve chosen an offering of {amount}. Please confirm to proceed.',
+            'payment_success' => 'Thank you! Your offering of {amount} has been received.',
+            'refill_100' => 'Offer $1',
+            'refill_200' => 'Offer $2',
+            'refill_400' => 'Offer $4',
+            'refill_1000' => 'Offer $10',
+            'request_prayer_text' => 'What prayer would you like to request? Please share your intentions.',
+            'request_received' => 'Your prayer request has been received. We are ready to proceed.',
+            'confirm_prayer' => 'You requested the following prayer: "{text}". The offering is {price}. Do you confirm?',
+            'confirm_button' => 'Confirm',
+            'cancel_button' => 'Cancel',
+            'insufficient_balance' => 'You don’t have enough offerings to proceed.',
+            'prayer_cancelled' => 'Your request has been canceled. Please submit a new prayer request.',
+            'prayer_generating' => 'We are preparing your prayer...',
+            'generated_prayer' => 'Here is your prayer:',
+            'audio_generation_failed' => 'We couldn’t generate an audio recording of your prayer. Please try again.',
+            'prayer_generation_failed' => 'We couldn’t generate the prayer text. Please try again.',
+            'audio_send_error' => 'There was an issue sending the audio message. Please check your privacy settings.',
+            'prompt_pray' => 'You are a Catholic priest. Please craft a beautiful and heartfelt prayer, no longer than 1024 characters, based on the following intention:',
+            'prompt_saints' => 'You are a Catholic priest. Please give me recommendation how to pray for the following intention:',
+            'saints_recommendation' => 'How best to pray:',
+        ];                   
     }
 
     // Function to get a string with optional interpolation
     public function get($key, $params = []) {
-        $string = $this->strings[$key] ?? 'Текст недоступен';
+        $string = $this->strings[$key] ?? 'Text unavailable';
 
         // Replace any placeholders with provided params
         foreach ($params as $param_key => $param_value) {
