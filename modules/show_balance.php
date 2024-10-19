@@ -12,7 +12,7 @@ function handle_check_balance($chat_id, $callback_query_id) {
 
     if ($balance !== false) {
         // Send balance message
-        send_message($chat_id, $strings->get('current_balance') . $balance . " ₽");
+        send_message($chat_id, $strings->get('current_balance', ['amount' = > $balance]));
     } else {
         // If user not found, notify them
         send_message($chat_id, $strings->get('balance_not_found'));

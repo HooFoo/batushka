@@ -15,7 +15,7 @@ class Strings {
             'refill_balance' => 'Make an Offering',
             'check_balance' => 'Check Your Offerings',
             'request_prayer' => 'Request a Prayer',
-            'current_balance' => 'Your current offering balance is: ',
+            'current_balance' => 'Your current offering balance is: ${amount}',
             'balance_not_found' => 'We couldn’t locate your balance. Please start a new session.',
             'balance_checked' => 'Your offering balance has been checked.',
             'choose_refill_amount' => 'Choose your offering amount:',
