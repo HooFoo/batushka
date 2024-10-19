@@ -2,13 +2,14 @@
 
 // Common utility functions used across multiple modules
 
-function send_message($chat_id, $text, $reply_markup = 'markdown') {
+function send_message($chat_id, $text, $reply_markup = null) {
     global $telegram_token;
     
     $url = "https://api.telegram.org/bot$telegram_token/sendMessage";
     $data = [
         'chat_id' => $chat_id,
-        'text' => $text
+        'text' => $text,
+        'markup' => 'markdown'
     ];
 
     if ($reply_markup) {
