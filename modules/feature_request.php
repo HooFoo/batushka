@@ -5,20 +5,21 @@ require_once('modules/generate_prayer.php');
 function handle_prayer_request($chat_id, $text, $callback_data, $callback_query_id) {
     global $db;
     global $price;
+    global $strings;
 
     // Check if user is waiting for prayer text
     $session_state = get_user_session($chat_id);
     
-    // Step 1: If user presses the "Заказать молитву" button
+    // Step 1: If user presses the "request_feature" button
     if ($callback_data === "request_feature") {
         // Send message asking for prayer text
-        send_message($chat_id, "Какую бы молитву вы хотели получить?");
+        send_message($chat_id, $strings->get('request_prayer_text'));
         
         // Set session state to waiting for prayer
         update_user_session($chat_id, 'waiting_for_prayer');
         
         // Answer callback
-        answer_callback_query($callback_query_id, "Запрос принят.");
+        answer_callback_query($callback_query_id, $strings->get('request_received'));
     }
     
     // Step 2: Capture prayer text and ask for confirmation
@@ -28,12 +29,12 @@ function handle_prayer_request($chat_id, $text, $callback_data, $callback_query_
         $stmt->execute([$chat_id, $text]);
         
         // Prepare confirmation message
-        $confirmation_text = "Вы хотите заказать молитву: \"$text\"? Это стоит $price  рублей. Подтверждаете?";
+        $confirmation_text = $strings->get('confirm_prayer', ['text' => $text, 'price' => $price]);
         send_message($chat_id, $confirmation_text, json_encode([
             'inline_keyboard' => [
                 [
-                    ['text' => 'Подтвердить', 'callback_data' => 'confirm_prayer'],
-                    ['text' => 'Отменить', 'callback_data' => 'reject_prayer']
+                    ['text' => $strings->get('confirm_button'), 'callback_data' => 'confirm_prayer'],
+                    ['text' => $strings->get('cancel_button'), 'callback_data' => 'reject_prayer']
                 ]
             ]
         ]));
@@ -57,11 +58,11 @@ function handle_prayer_request($chat_id, $text, $callback_data, $callback_query_
             // Update session state to none
             update_user_session($chat_id, 'none');
         } else {
-            send_message($chat_id, "Недостаточно средств на балансе.");
+            send_message($chat_id, $strings->get('insufficient_balance'));
         }
     } elseif ($callback_data === "reject_prayer") {
         // Reset to asking for new prayer text
-        send_message($chat_id, "Вы отменили запрос. Пожалуйста, укажите новую молитву.");
+        send_message($chat_id, $strings->get('prayer_cancelled'));
         update_user_session($chat_id, 'waiting_for_prayer');
     }
 }

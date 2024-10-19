@@ -3,6 +3,7 @@
 // Function to handle checking and displaying the user's balance
 function handle_check_balance($chat_id, $callback_query_id) {
     global $db;
+    global $strings;
 
     // Retrieve balance from the sessions table
     $stmt = $db->prepare("SELECT balance FROM sessions WHERE user_id = ?");
@@ -11,14 +12,14 @@ function handle_check_balance($chat_id, $callback_query_id) {
 
     if ($balance !== false) {
         // Send balance message
-        send_message($chat_id, "Ваш текущий баланс: " . $balance . " ₽");
+        send_message($chat_id, $strings->get('current_balance') . $balance . " ₽");
     } else {
         // If user not found, notify them
-        send_message($chat_id, "Ваш баланс не найден. Пожалуйста, начните новую сессию.");
+        send_message($chat_id, $strings->get('balance_not_found'));
     }
 
     // Respond to the callback query
-    answer_callback_query($callback_query_id, "Баланс проверен.");
+    answer_callback_query($callback_query_id, $strings->get('balance_checked'));
 }
 
 ?>

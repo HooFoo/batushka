@@ -3,6 +3,7 @@
 // Function to handle starting or resetting a user session
 function start_session($chat_id) {
     global $db;
+    global $strings;
 
     // Check if the user already exists
     $stmt = $db->prepare("SELECT COUNT(*) FROM sessions WHERE user_id = ?");
@@ -15,7 +16,7 @@ function start_session($chat_id) {
         $stmt->execute([$chat_id]);
 
         // Send the bot description message for new users
-        send_message($chat_id, "Добро пожаловать! Я бот-молитвенник. Вы можете заказать молитву. \n\n **Для корректной работы разрешите боту присылать вам аудио сообщения в настройках приватности.**");
+        send_message($chat_id, $strings->get('bot_description'));
     } else {
         // If the user exists, reset their session state
         $stmt = $db->prepare("UPDATE sessions SET state = 'none' WHERE user_id = ?");
@@ -23,19 +24,20 @@ function start_session($chat_id) {
     }
 
     // Send welcome message with action options
-    send_message($chat_id, "Выберите действие:", generate_main_menu());
+    send_message($chat_id, $strings->get('choose_action'), generate_main_menu());
 }
 
 // Function to generate main menu buttons
 function generate_main_menu() {
+    global $strings;
     return json_encode([
         'inline_keyboard' => [
             [
-                ['text' => 'Пополнить баланс', 'callback_data' => 'refill_balance'],
-                ['text' => 'Проверить баланс', 'callback_data' => 'check_balance']
+                ['text' => $strings->get('refill_balance'), 'callback_data' => 'refill_balance'],
+                ['text' => $strings->get('check_balance'), 'callback_data' => 'check_balance']
             ],
             [
-                ['text' => 'Заказать молитву', 'callback_data' => 'request_feature']
+                ['text' => $strings->get('request_prayer'), 'callback_data' => 'request_feature']
             ]
         ]
     ]);

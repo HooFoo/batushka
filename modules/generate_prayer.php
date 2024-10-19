@@ -4,19 +4,22 @@
 function generate_prayer($chat_id, $user_prayer_request) {
     global $db;
     global $price;
+    global $strings;
+
     // Notify user about generation
-    send_message($chat_id, "Пишем вашу молитву ...");
+    send_message($chat_id, $strings->get('prayer_generating'));
+
     // Prepare the prompt for ChatGPT
     $prompt = $user_prayer_request;
+
     // Call ChatGPT API
     $response = call_chatgpt_api($prompt);
 
-    // Call ChatGPT API
     if ($response && isset($response['choices'][0]['message']['content'])) {
         // Successfully generated prayer
         $generated_prayer = trim($response['choices'][0]['message']['content']);
         // Send the generated prayer to the user
-        send_message($chat_id, "Вот ваша молитва:\n\n" . $generated_prayer);
+        send_message($chat_id, $strings->get('generated_prayer') . "\n\n" . $generated_prayer);
 
         // Generate audio for the prayer text
         $audio_file = call_audio_api($generated_prayer);
@@ -26,18 +29,17 @@ function generate_prayer($chat_id, $user_prayer_request) {
             send_audio($chat_id, $audio_file);
         } else {
             // If there was a problem generating the audio
-            send_message($chat_id, "К сожалению, не удалось создать запись вашей молитвы.");
+            send_message($chat_id, $strings->get('audio_generation_failed'));
         }
-
     } else {
         // Log failure
         error_log("Failed to generate prayer for user: $chat_id");
 
         // If there was a problem, inform the user and return the balance
-        send_message($chat_id, "К сожалению, не удалось получить молитву. Пожалуйста, попробуйте снова.");
-        
+        send_message($chat_id, $strings->get('prayer_generation_failed'));
+
         // Refund the user
-        refund_balance($chat_id, $price); // Assuming the cost was 100 rubles
+        refund_balance($chat_id, $price);
 
         // Log refund
         error_log("Refunded balance for user: $chat_id, amount: $price");
@@ -49,13 +51,13 @@ function generate_prayer($chat_id, $user_prayer_request) {
 
 // Function to call the ChatGPT API for generating a prayer
 function call_chatgpt_api($prompt) {
-    global $api_key;  // API key is now in the config.php file
+    global $api_key;
     $url = 'https://api.openai.com/v1/chat/completions';
 
     $data = [
-        'model' => 'gpt-4',  // Or another suitable model
+        'model' => 'gpt-4',
         'messages' => [
-            ['role' => 'system', 'content' => 'Ты православный священник. Не скупись на слова. Сделай длинную и красивую молитву. Но длиной не больше 1024 символов.  Напиши молитву по следующей теме:'],
+            ['role' => 'system', 'content' => 'Ты православный священник. Не скупись на слова. Сделай длинную и красивую молитву. Но длиной не больше 1024 символов. Напиши молитву по следующей теме:'],
             ['role' => 'user', 'content' => $prompt]
         ],
         'max_tokens' => 500
@@ -82,12 +84,12 @@ function call_chatgpt_api($prompt) {
 
 // Function to call the OpenAI API for generating audio
 function call_audio_api($text) {
-    global $api_key;  // API key is now in the config.php file
+    global $api_key;
     $url = 'https://api.openai.com/v1/audio/speech';
     $data = [
         'input' => $text,
-        'voice' => 'onyx',  // Replace with the desired voice
-        'model' => 'tts-1',  // Replace with desired model
+        'voice' => 'onyx',
+        'model' => 'tts-1',
         'response_format' => 'opus'
     ];
 
