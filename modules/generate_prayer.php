@@ -9,11 +9,8 @@ function generate_prayer($chat_id, $user_prayer_request) {
     // Notify user about generation
     send_message($chat_id, $strings->get('prayer_generating'));
 
-    // Prepare the prompt for ChatGPT
-    $prompt = $user_prayer_request;
-
     // Call ChatGPT API
-    $response = call_chatgpt_api($prompt);
+    $response = call_chatgpt_api($strings->get('prompt_pray'), $user_prayer_request);
 
     if ($response && isset($response['choices'][0]['message']['content'])) {
         // Successfully generated prayer
@@ -21,6 +18,12 @@ function generate_prayer($chat_id, $user_prayer_request) {
         // Send the generated prayer to the user
         send_message($chat_id, $strings->get('generated_prayer') . "\n\n" . $generated_prayer);
 
+        // Get a list of saints based on the prayer text
+        $response_saints = call_chatgpt_api($strings->get('prompt_saints'), $user_prayer_request, 200);
+        if ($response_saints && isset($response_saints['choices'][0]['message']['content'])) {
+            $saints_list = trim($response_saints['choices'][0]['message']['content']);
+            send_message($chat_id, $strings->get('saints_recommendation') . "\n\n" . $saints_list);
+        }
         // Generate audio for the prayer text
         $audio_file = call_audio_api($generated_prayer);
 
@@ -50,17 +53,17 @@ function generate_prayer($chat_id, $user_prayer_request) {
 }
 
 // Function to call the ChatGPT API for generating a prayer
-function call_chatgpt_api($prompt) {
+function call_chatgpt_api($system_prompt, $user_request, $max_tokens = 500) {
     global $api_key;
     $url = 'https://api.openai.com/v1/chat/completions';
 
     $data = [
         'model' => 'gpt-4',
         'messages' => [
-            ['role' => 'system', 'content' => 'Ты православный священник. Не скупись на слова. Сделай длинную и красивую молитву. Но длиной не больше 1024 символов. Напиши молитву по следующей теме:'],
-            ['role' => 'user', 'content' => $prompt]
+            ['role' => 'system', 'content' => $system_prompt],
+            ['role' => 'user', 'content' => $user_request]
         ],
-        'max_tokens' => 500
+        'max_tokens' => $max_tokens
     ];
 
     $options = [
