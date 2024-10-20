@@ -1,54 +1,35 @@
 <?php
 
-// Common utility functions used across multiple modules
+// Common utility functions used across multiple modules for VK
 
 function send_message($chat_id, $text, $reply_markup = null) {
-    global $telegram_token;
+    global $vk_token;
     
-    $url = "https://api.telegram.org/bot$telegram_token/sendMessage";
+    $url = "https://api.vk.com/method/messages.send";
     $data = [
-        'chat_id' => $chat_id,
-        'text' => $text,
-        'markup' => 'markdown'
+        'user_id' => $chat_id,
+        'message' => $text,
+        'random_id' => mt_rand(),
+        'access_token' => $vk_token,
+        'v' => '5.131'  // API version
     ];
 
     if ($reply_markup) {
-        $data['reply_markup'] = $reply_markup;
+        $data['keyboard'] = json_encode($reply_markup);
     }
 
     file_get_contents($url . '?' . http_build_query($data));
 }
 
 function send_invoice($chat_id, $title, $description, $payload, $provider_token, $currency, $price) {
-    global $telegram_token;
-    global $payment_provider_token;
-    $url = "https://api.telegram.org/bot$telegram_token/sendInvoice";
-    $prices = json_encode([["label" => $title, "amount" => $price * 100]]); // amount in smallest currency unit
-
-    $data = [
-        'chat_id' => $chat_id,
-        'title' => $title,
-        'description' => $description,
-        'payload' => $payload,
-        'provider_token' => $payment_provider_token,
-        'currency' => $currency,
-        'prices' => $prices
-    ];
-
-    $response = file_get_contents($url . '?' . http_build_query($data));
-    error_log("Send invoice:" . $response);
+    // VK does not have a direct invoice method like Telegram.
+    // You would need to integrate a third-party payment system or VK Pay.
 }
 
 function answer_callback_query($callback_query_id, $text) {
-    global $telegram_token;
+    global $vk_token;
 
-    $url = "https://api.telegram.org/bot$telegram_token/answerCallbackQuery";
-    $data = [
-        'callback_query_id' => $callback_query_id,
-        'text' => $text
-    ];
-
-    file_get_contents($url . '?' . http_build_query($data));
+    // VK doesn’t have callback queries like Telegram. You'll handle it with message events.
 }
 
 // Get current session state
@@ -89,32 +70,54 @@ function update_prayer_status($chat_id, $status) {
     $stmt->execute([$status, $chat_id]);
 }
 
-// Function to send audio to the user
+// Function to send audio to the user via VK
 function send_audio($chat_id, $audio_file) {
-    global $telegram_token;
-    global $strings;
+    global $vk_token;
 
-    $url = "https://api.telegram.org/bot$telegram_token/sendVoice";
-    $post_fields = [
-        'chat_id'   => $chat_id,
-        'voice'     => new CURLFile(realpath($audio_file))
-    ];
+    // VK requires uploading files first and then sending them
+    $upload_url = "https://api.vk.com/method/docs.getMessagesUploadServer?type=audio_message&peer_id=$chat_id&access_token=$vk_token&v=5.131";
+    $upload_response = file_get_contents($upload_url);
+    $upload_data = json_decode($upload_response, true);
 
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type:multipart/form-data"]);
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $post_fields);
-    $result = curl_exec($ch);
-    curl_close($ch);
+    if (isset($upload_data['response']['upload_url'])) {
+        $upload_url = $upload_data['response']['upload_url'];
 
-    if ($result === false || json_decode($result)->ok !== true) {
-        send_message($chat_id, $strings->get('audio_send_error'));
-        error_log("Error sending audio file to Telegram.");
+        // Now upload the file
+        $post_fields = ['file' => new CURLFile(realpath($audio_file))];
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $upload_url);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $post_fields);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $upload_result = curl_exec($ch);
+        curl_close($ch);
+
+        $upload_result = json_decode($upload_result, true);
+
+        // Save the audio message and send it
+        if (isset($upload_result['file'])) {
+            $save_url = "https://api.vk.com/method/docs.save?file=" . $upload_result['file'] . "&access_token=$vk_token&v=5.131";
+            $save_response = file_get_contents($save_url);
+            $save_data = json_decode($save_response, true);
+
+            if (isset($save_data['response'][0]['owner_id']) && isset($save_data['response'][0]['id'])) {
+                $owner_id = $save_data['response'][0]['owner_id'];
+                $doc_id = $save_data['response'][0]['id'];
+
+                // Send the audio message
+                $send_url = "https://api.vk.com/method/messages.send";
+                $data = [
+                    'user_id' => $chat_id,
+                    'attachment' => "doc{$owner_id}_{$doc_id}",
+                    'random_id' => mt_rand(),
+                    'access_token' => $vk_token,
+                    'v' => '5.131'
+                ];
+
+                file_get_contents($send_url . '?' . http_build_query($data));
+            }
+        }
     }
-
-    // Optionally, delete the audio file after sending it
-    unlink($audio_file);
 }
 
 ?>

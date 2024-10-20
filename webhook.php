@@ -6,7 +6,7 @@ require_once('db_connection.php');
 require_once('strings.php');
 require_once('common.php');
 require_once('modules/feature_request.php');  // Handle prayer request
-require_once('modules/show_balance.php');          // Handle balance check
+require_once('modules/show_balance.php');     // Handle balance check
 require_once('modules/refill_balance.php');   // Handle balance refill
 require_once('modules/start_session.php');    // Handle starting session
 
@@ -17,7 +17,7 @@ $db = $pdo;
 // Now $db can be used in all modules as a global variable
 global $db;
 
-// localization
+// Localization
 $strings = new Strings();
 global $strings;
 
@@ -26,34 +26,15 @@ if (!$db) {
     exit;
 }
 
-// Get webhook data
+// Get webhook data from VK
 $input = file_get_contents('php://input');
 $update = json_decode($input, true);
 
-// Check if it's a callback query or a message
-if (isset($update['callback_query'])) {
-    $callback_data = $update['callback_query']['data'];
-    $chat_id = $update['callback_query']['message']['chat']['id'];
-    $callback_query_id = $update['callback_query']['id'];
-
-    // Process callback data for each feature
-    if ($callback_data === "check_balance") {
-        // Show balance
-        handle_check_balance($chat_id, $callback_query_id);
-    } elseif ($callback_data === "refill_balance") {
-        // Show balance refill options
-        handle_refill_balance_options($chat_id, $callback_query_id);
-    } elseif (strpos($callback_data, "refill_balance_") === 0) {
-        // Handle balance refill based on button
-        handle_refill_balance($chat_id, $callback_data, $callback_query_id);
-    } elseif (in_array($callback_data, ['request_feature', 'confirm_prayer', 'reject_prayer'])) {
-        // Handle feature request (prayer request flow)
-        handle_prayer_request($chat_id, '', $callback_data, $callback_query_id);
-    }
-
-} elseif (isset($update['message'])) {
-    $chat_id = $update['message']['chat']['id'];
-    $text = $update['message']['text'];
+if (isset($update['object']['message'])) {
+    // It's a message event
+    $message = $update['object']['message'];
+    $chat_id = $message['from_id'];
+    $text = $message['text'];
 
     // If the message contains "/start"
     if ($text === "/start") {
@@ -63,5 +44,26 @@ if (isset($update['callback_query'])) {
         // Process message based on session state (for prayer request)
         handle_prayer_request($chat_id, $text, '', '');
     }
+} elseif (isset($update['object']['payload'])) {
+    // It's a button (callback query equivalent) event
+    $payload = json_decode($update['object']['payload'], true);
+    $callback_data = $payload['callback_data'];
+    $chat_id = $update['object']['message']['from_id'];
+
+    // Process callback data for each feature
+    if ($callback_data === "check_balance") {
+        // Show balance
+        handle_check_balance($chat_id, '');
+    } elseif ($callback_data === "refill_balance") {
+        // Show balance refill options
+        handle_refill_balance_options($chat_id, '');
+    } elseif (strpos($callback_data, "refill_balance_") === 0) {
+        // Handle balance refill based on button
+        handle_refill_balance($chat_id, $callback_data, '');
+    } elseif (in_array($callback_data, ['request_feature', 'confirm_prayer', 'reject_prayer'])) {
+        // Handle feature request (prayer request flow)
+        handle_prayer_request($chat_id, '', $callback_data, '');
+    }
 }
+
 ?>

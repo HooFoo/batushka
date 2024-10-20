@@ -30,14 +30,26 @@ function handle_prayer_request($chat_id, $text, $callback_data, $callback_query_
         
         // Prepare confirmation message
         $confirmation_text = $strings->get('confirm_prayer', ['text' => $text, 'price' => $price]);
-        send_message($chat_id, $confirmation_text, json_encode([
-            'inline_keyboard' => [
+        send_message($chat_id, $confirmation_text, [
+            'buttons' => [
                 [
-                    ['text' => $strings->get('confirm_button'), 'callback_data' => 'confirm_prayer'],
-                    ['text' => $strings->get('cancel_button'), 'callback_data' => 'reject_prayer']
+                    [
+                        'action' => [
+                            'type' => 'text',
+                            'label' => $strings->get('confirm_button'),
+                            'payload' => json_encode(['callback_data' => 'confirm_prayer'])
+                        ]
+                    ],
+                    [
+                        'action' => [
+                            'type' => 'text',
+                            'label' => $strings->get('cancel_button'),
+                            'payload' => json_encode(['callback_data' => 'reject_prayer'])
+                        ]
+                    ]
                 ]
             ]
-        ]));
+        ]);
         
         // Update session state to waiting for confirmation
         update_user_session($chat_id, 'waiting_for_confirmation');
@@ -45,7 +57,7 @@ function handle_prayer_request($chat_id, $text, $callback_data, $callback_query_
 
     // Step 3: Handle confirmation or rejection
     elseif ($callback_data === "confirm_prayer") {
-        // Deduct the balance (assume 100 rubles)
+        // Deduct the balance (assume 100 rubles or equivalent in other currency)
         if (deduct_balance($chat_id, $price)) {
             // Generate prayer after balance deduction
             $stmt = $db->prepare("SELECT prayer_text FROM prayer_requests WHERE user_id = ? ORDER BY id DESC LIMIT 1");

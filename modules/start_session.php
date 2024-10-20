@@ -27,20 +27,40 @@ function start_session($chat_id) {
     send_message($chat_id, $strings->get('choose_action'), generate_main_menu());
 }
 
-// Function to generate main menu buttons
+// Function to generate main menu buttons for VK
 function generate_main_menu() {
     global $strings;
-    return json_encode([
-        'inline_keyboard' => [
+
+    return [
+        'one_time' => false,
+        'buttons' => [
             [
-                ['text' => $strings->get('refill_balance'), 'callback_data' => 'refill_balance'],
-                ['text' => $strings->get('check_balance'), 'callback_data' => 'check_balance']
+                [
+                    'action' => [
+                        'type' => 'text',
+                        'label' => $strings->get('refill_balance'),
+                        'payload' => json_encode(['callback_data' => 'refill_balance'])
+                    ]
+                ],
+                [
+                    'action' => [
+                        'type' => 'text',
+                        'label' => $strings->get('check_balance'),
+                        'payload' => json_encode(['callback_data' => 'check_balance'])
+                    ]
+                ]
             ],
             [
-                ['text' => $strings->get('request_prayer'), 'callback_data' => 'request_feature']
+                [
+                    'action' => [
+                        'type' => 'text',
+                        'label' => $strings->get('request_prayer'),
+                        'payload' => json_encode(['callback_data' => 'request_feature'])
+                    ]
+                ]
             ]
         ]
-    ]);
+    ];
 }
 
 ?>
