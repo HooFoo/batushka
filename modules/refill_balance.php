@@ -49,7 +49,7 @@ function handle_successful_payment($chat_id, $payment_info) {
     $stmt->execute(['user_id' => $chat_id]);
     $balance = $stmt->fetchColumn();
 
-    send_message($chat_id, $strings->get('payment_success', ['amount' => $amount_paid]) . ' ' . $strings->get('current_balance') . $balance . " ₽");
+    send_message($chat_id, $strings->get('payment_success', ['amount' => $amount_paid]) . ' ' . $strings->get('current_balance', ['balance' => $balance]));
 }
 
 function update_balance($user_id, $amount) {
