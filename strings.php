@@ -15,7 +15,7 @@ class Strings {
             'refill_balance' => 'Пополнить счёт',
             'check_balance' => 'Проверить счёт',
             'request_prayer' => 'Заказать молитву',
-            'current_balance' => 'Ваш текущий баланс составляет: ',
+            'current_balance' => 'Ваш текущий баланс составляет: {balance} ₽',
             'balance_not_found' => 'К сожалению, ваш баланс не найден. Пожалуйста, начните новую сессию.',
             'balance_checked' => 'Ваш баланс проверен.',
             'choose_refill_amount' => 'Выберите сумму для пополнения:',
