@@ -29,10 +29,11 @@ function send_invoice($chat_id, $price) {
     $prices = json_encode([["label" => $title, "amount" => $price * 100]]); // amount in smallest currency unit
     $payload = $chat_id . '-' . $amount
     $description = str_replace("{amount}", $price, $payment_description);
+    
     $data = [
         'chat_id' => $chat_id,
         'title' => $payment_title,
-        'description' => $payment_description,
+        'description' => $description,
         'payload' => $payload,
         'provider_token' => $payment_provider_token,
         'currency' => $payment_currency,
