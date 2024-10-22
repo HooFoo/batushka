@@ -30,7 +30,7 @@ function handle_refill_callback($chat_id, $callback_data) {
     $description = $strings->get('refill_description', ['amount' => $amount]);
 
     // Call the send_invoice function
-    send_invoice($chat_id, $amount, $description);
+    send_invoice($chat_id, $amount);
 }
 
 function handle_refill_balance_options($chat_id, $callback_query_id) {
