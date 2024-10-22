@@ -49,6 +49,9 @@ if (isset($update['callback_query'])) {
     } elseif (in_array($callback_data, ['request_feature', 'confirm_prayer', 'reject_prayer'])) {
         // Handle feature request (prayer request flow)
         handle_prayer_request($chat_id, '', $callback_data, $callback_query_id);
+    } elseif (strpos($callback_data, "refill_") === 0) {
+        // Handle balance refill based on selected amount
+        handle_refill_callback($chat_id, $callback_data);
     }
 
 } elseif (isset($update['message'])) {
