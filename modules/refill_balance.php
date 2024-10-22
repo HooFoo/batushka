@@ -1,3 +1,5 @@
+<?php
+
 function handle_successful_payment($chat_id, $payment_info) {
     global $pdo, $strings;
 
@@ -26,3 +28,5 @@ function log_payment($user_id, $amount, $success) {
         'success' => $success
     ]);
 }
+
+?>
