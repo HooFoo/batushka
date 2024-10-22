@@ -14,4 +14,9 @@ $api_key = 'YOUR_OPENAI_API_KEY'; // Replace with your actual OpenAI API key
 $price = 100; // Price in smallest currency unit (e.g., cents for USD)
 
 $payment_provider_token = ''; // Payment provider token
+
+// payment provider settings
+$payment_title = 'Пополнение баланса';
+$payment_description = 'Пополнение баланса на сумму {amount} ₽';
+$payment_currency = 'RUB';
 ?>
