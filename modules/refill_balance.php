@@ -4,43 +4,19 @@ function send_refill_options($chat_id) {
     global $strings;
 
     $keyboard = [
-        'buttons' => [
+        'inline_keyboard' => [
             [
-                [
-                    'action' => [
-                        'type' => 'text',
-                        'label' => $strings->get('refill_100'),
-                        'payload' => json_encode(['callback_data' => 'refill_100'])
-                    ]
-                ],
-                [
-                    'action' => [
-                        'type' => 'text',
-                        'label' => $strings->get('refill_200'),
-                        'payload' => json_encode(['callback_data' => 'refill_200'])
-                    ]
-                ]
+                ['text' => $strings->get('refill_100'), 'callback_data' => 'refill_100'],
+                ['text' => $strings->get('refill_200'), 'callback_data' => 'refill_200']
             ],
             [
-                [
-                    'action' => [
-                        'type' => 'text',
-                        'label' => $strings->get('refill_400'),
-                        'payload' => json_encode(['callback_data' => 'refill_400'])
-                    ]
-                ],
-                [
-                    'action' => [
-                        'type' => 'text',
-                        'label' => $strings->get('refill_1000'),
-                        'payload' => json_encode(['callback_data' => 'refill_1000'])
-                    ]
-                ]
+                ['text' => $strings->get('refill_400'), 'callback_data' => 'refill_400'],
+                ['text' => $strings->get('refill_1000'), 'callback_data' => 'refill_1000']
             ]
         ]
     ];
 
-    send_message($chat_id, $strings->get('choose_refill_amount'), $keyboard);
+    send_message($chat_id, $strings->get('choose_refill_amount'), json_encode($keyboard));
 }
 
 function handle_refill_callback($chat_id, $callback_data) {
@@ -53,7 +29,7 @@ function handle_refill_callback($chat_id, $callback_data) {
     // Prepare a description for the invoice with interpolation
     $description = $strings->get('refill_description', ['amount' => $amount]);
 
-    // Call the send_invoice function (no direct invoice support on VK, would need a third-party integration)
+    // Call the send_invoice function
     send_invoice($chat_id, $amount, $description);
 }
 
