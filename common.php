@@ -28,7 +28,7 @@ function send_invoice($chat_id, $price) {
 
     $url = "https://api.telegram.org/bot$telegram_token/sendInvoice";
     $prices = json_encode([["label" => $title, "amount" => $price * 100]]); // amount in smallest currency unit
-    $payload = $chat_id . '-' . $amount;
+    $payload = $chat_id . '-' . $price;
     $description = str_replace("{amount}", $price, $payment_description);
 
     $data = [
