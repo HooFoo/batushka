@@ -42,7 +42,13 @@ function send_invoice($chat_id, $price) {
     ];
 
     $response = file_get_contents($url . '?' . http_build_query($data));
-    error_log("Send invoice:" . $response);
+    if ($result === false || json_decode($result)->ok !== true) {
+        send_message($chat_id, $strings->get('audio_send_error'));
+        error_log("Error sending audio file to Telegram. \n\n" . print_r(error_get_last(), true) . "\n\n" . $result);
+    } else {
+        error_log("Send invoice:" . $response);
+    }
+    
 }
 
 function answer_callback_query($callback_query_id, $text) {
