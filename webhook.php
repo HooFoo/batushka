@@ -66,6 +66,11 @@ if (isset($update['callback_query'])) {
         // Process message based on session state (for prayer request)
         handle_prayer_request($chat_id, $text, '', '');
     }
+} if (isset($update['pre_checkout_query'])) {
+    $pre_checkout_query_id = $update['pre_checkout_query']['id'];
+
+    // Always confirm the pre-checkout query to proceed with payment
+    confirm_pre_checkout($pre_checkout_query_id);
 } else {
     error_log("Unexpected request: " . print_r($update, true));
 }
