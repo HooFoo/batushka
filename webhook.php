@@ -55,6 +55,17 @@ if (isset($update['callback_query'])) {
         handle_refill_callback($chat_id, $callback_data);
     }
 
+} if (isset($update['pre_checkout_query'])) {
+    $pre_checkout_query_id = $update['pre_checkout_query']['id'];
+    // Always confirm the pre-checkout query to proceed with payment
+    confirm_pre_checkout($pre_checkout_query_id);
+} elseif (isset($update['message']['successful_payment'])) {
+    // Handle successful payment
+    $chat_id = $update['message']['chat']['id'];
+    $payment_info = $update['message']['successful_payment'];
+
+    // Call the handle_successful_payment function
+    handle_successful_payment($chat_id, $payment_info);
 } elseif (isset($update['message'])) {
     $chat_id = $update['message']['chat']['id'];
     $text = $update['message']['text'];
@@ -67,11 +78,6 @@ if (isset($update['callback_query'])) {
         // Process message based on session state (for prayer request)
         handle_prayer_request($chat_id, $text, '', '');
     }
-} if (isset($update['pre_checkout_query'])) {
-    $pre_checkout_query_id = $update['pre_checkout_query']['id'];
-
-    // Always confirm the pre-checkout query to proceed with payment
-    confirm_pre_checkout($pre_checkout_query_id);
 } else {
     error_log("Unexpected request: " . print_r($update, true));
 }
