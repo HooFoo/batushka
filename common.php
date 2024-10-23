@@ -42,8 +42,9 @@ function send_invoice($chat_id, $price) {
     ];
     error_log("Sending invoice: " . json_encode($data));
     $response = file_get_contents($url . '?' . http_build_query($data));
-    if ($result === false) {
-        error_log("Error sending audio file to Telegram. \n\n" . print_r(error_get_last(), true) . "\n\n" . $result);
+
+    if (response === false) {
+        error_log("Error sending invoice. \n\n" . print_r(error_get_last(), true) . "\n\n" . $result);
     } else {
         error_log("Send invoice:" . $response);
     }
