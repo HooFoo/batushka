@@ -66,5 +66,7 @@ if (isset($update['callback_query'])) {
         // Process message based on session state (for prayer request)
         handle_prayer_request($chat_id, $text, '', '');
     }
+} elseif {
+    error_log("Unexpected request: " . print_r($update, true));
 }
 ?>
