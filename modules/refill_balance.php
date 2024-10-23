@@ -19,9 +19,10 @@ function send_refill_options($chat_id) {
     send_message($chat_id, $strings->get('choose_refill_amount'), json_encode($keyboard));
 }
 
-function handle_refill_callback($chat_id, $callback_data) {
+function handle_refill_callback($chat_id, $callback_data, $callback_query_id) {
     global $strings;
 
+    answer_callback_query($callback_query_id, $strings->get('refill_requested'))
     // Extract the amount from the callback data
     $amount = (int) str_replace('refill_', '', $callback_data);
     error_log("Refill amount: " . $amount);
@@ -35,8 +36,9 @@ function handle_refill_callback($chat_id, $callback_data) {
 
 function handle_refill_balance_options($chat_id, $callback_query_id) {
     global $strings;
-    send_refill_options($chat_id);
+    
     answer_callback_query($callback_query_id, $strings->get('choose_refill_amount'));
+    send_refill_options($chat_id);
 }
 
 function handle_successful_payment($chat_id, $payment_info) {
