@@ -22,7 +22,7 @@ function send_refill_options($chat_id) {
 function handle_refill_callback($chat_id, $callback_data, $callback_query_id) {
     global $strings;
 
-    answer_callback_query($callback_query_id, $strings->get('refill_requested'))
+    answer_callback_query($callback_query_id, $strings->get('refill_requested'));
     // Extract the amount from the callback data
     $amount = (int) str_replace('refill_', '', $callback_data);
     error_log("Refill amount: " . $amount);
