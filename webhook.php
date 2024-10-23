@@ -52,7 +52,7 @@ if (isset($update['callback_query'])) {
         handle_prayer_request($chat_id, '', $callback_data, $callback_query_id);
     } elseif (strpos($callback_data, "refill_") === 0) {
         // Handle balance refill based on selected amount
-        handle_refill_callback($chat_id, $callback_data);
+        handle_refill_callback($chat_id, $callback_data, $callback_query_id);
     }
 
 } if (isset($update['pre_checkout_query'])) {

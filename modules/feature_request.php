@@ -12,14 +12,15 @@ function handle_prayer_request($chat_id, $text, $callback_data, $callback_query_
     
     // Step 1: If user presses the "request_feature" button
     if ($callback_data === "request_feature") {
+        // Answer callback
+        answer_callback_query($callback_query_id, $strings->get('request_received'));
+        
         // Send message asking for prayer text
         send_message($chat_id, $strings->get('request_prayer_text'));
         
         // Set session state to waiting for prayer
         update_user_session($chat_id, 'waiting_for_prayer');
-        
-        // Answer callback
-        answer_callback_query($callback_query_id, $strings->get('request_received'));
+    
     }
     
     // Step 2: Capture prayer text and ask for confirmation
