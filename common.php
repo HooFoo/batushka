@@ -42,7 +42,7 @@ function send_invoice($chat_id, $price) {
     ];
     $response = file_get_contents($url . '?' . http_build_query($data));
 
-    if (response === false) {
+    if ($response === false) {
         error_log("Error sending invoice. \n\n" . print_r(error_get_last(), true) . "\n\n" . $result);
     } else {
         error_log("Send invoice:" . $response);
