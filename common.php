@@ -28,6 +28,14 @@ function send_invoice($chat_id, $price) {
 
     $url = "https://api.telegram.org/bot$telegram_token/sendInvoice";
     $prices = json_encode([["label" => $payment_title, "amount" => $price * 100]]); // amount in smallest currency unit
+    $reciept_data = [
+        "receipt" => [
+            "items" => [
+                    [ "description" => $payment_title, "quantity" => 1, "vat_code" => 1, "amount" => ["value" => $price, "currency" => $payment_currency] ]
+                ]
+            ]
+        ];
+    $provider_data = json_encode($reciept_data);
     $payload = $chat_id . '-' . $price;
     $description = str_replace("{amount}", $price, $payment_description);
 
@@ -38,8 +46,13 @@ function send_invoice($chat_id, $price) {
         'payload' => $payload,
         'provider_token' => $payment_provider_token,
         'currency' => $payment_currency,
-        'prices' => $prices
+        'need_phone_number' => True,
+        'send_phone_number_to_provider' => True,
+        'prices' => $prices,
+        'provider_data' => $provider_data
     ];
+    
+    error_log("Sending invoice: " . json_encode($data));
     $response = file_get_contents($url . '?' . http_build_query($data));
 
     if ($response === false) {
